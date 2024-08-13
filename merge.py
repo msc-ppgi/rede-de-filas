@@ -13,16 +13,20 @@ def encontrar_imagens(diretorio_raiz):
     return imagens
 
 # Função para juntar imagens em um grid quadrado
-def juntar_imagens(imagens, tamanho_celula):
+def juntar_imagens(imagens):
     n = len(imagens)
     tamanho_grid = math.ceil(math.sqrt(n))
-    nova_imagem = Image.new('RGB', (tamanho_grid * tamanho_celula, tamanho_grid * tamanho_celula), (255, 255, 255))
+    
+    # Calcula o tamanho da célula baseado na primeira imagem (assume-se que todas têm a mesma resolução)
+    largura_celula, altura_celula = imagens[0].size
+    
+    # Cria uma nova imagem grande o suficiente para conter todas as imagens originais
+    nova_imagem = Image.new('RGB', (tamanho_grid * largura_celula, tamanho_grid * altura_celula), (255, 255, 255))
     
     for i, imagem in enumerate(imagens):
-        imagem_resized = imagem.resize((tamanho_celula, tamanho_celula))
-        x = (i % tamanho_grid) * tamanho_celula
-        y = (i // tamanho_grid) * tamanho_celula
-        nova_imagem.paste(imagem_resized, (x, y))
+        x = (i % tamanho_grid) * largura_celula
+        y = (i // tamanho_grid) * altura_celula
+        nova_imagem.paste(imagem, (x, y))
     
     return nova_imagem
 
@@ -31,10 +35,9 @@ diretorio_raiz = "."
 
 # Encontra todas as imagens
 imagens = encontrar_imagens(diretorio_raiz)
-print(imagens)
-exit()
-# Junta as imagens em um grid
-imagem_final = juntar_imagens(imagens, 100)
 
-# Salva a imagem final
-imagem_final.save("imagem_junta.jpg")
+# Junta as imagens em um grid
+imagem_final = juntar_imagens(imagens)
+
+# Salva a imagem final em alta resolução
+imagem_final.save("imagem_junta.png", format="PNG")
